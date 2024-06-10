@@ -1,0 +1,123 @@
+
+NAME - KIshanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 15/09/23
+Assignment No - 05
+
+------------------------------START------------------------------------
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| dbms               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.027 sec)
+
+MariaDB [(none)]> use dbms
+Database changed
+MariaDB [dbms]> SHOW TABLES;
++----------------+
+| Tables_in_dbms |
++----------------+
+| n_empid        |
+| o_empid        |
++----------------+
+2 rows in set (0.001 sec)
+
+MariaDB [dbms]> CREATE TABLE stud_marks (
+    -> roll_no INT NOT NULL PRIMARY KEY,
+    -> name VARCHAR(20),
+    -> total_marks INT);
+Query OK, 0 rows affected (0.025 sec)
+
+MariaDB [dbms]> SELECT * FROM stud_marks;
+Empty set (0.087 sec)
+
+MariaDB [dbms]> INSERT INTO stud_marks VALUES
+    -> (1, "A", 600),
+    -> (3, "B", 850),
+    -> (5, "C", 950),
+    -> (7, "D", 1300),
+    -> (9, "E", 2000);
+Query OK, 5 rows affected (0.005 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [dbms]> SELECT * FROM stud_marks;
++---------+------+-------------+
+| roll_no | name | total_marks |
++---------+------+-------------+
+|       1 | A    |         600 |
+|       3 | B    |         850 |
+|       5 | C    |         950 |
+|       7 | D    |        1300 |
+|       9 | E    |        2000 |
++---------+------+-------------+
+5 rows in set (0.000 sec)
+
+MariaDB [dbms]> CREATE TABLE result (
+    -> roll_no INT NOT NULL PRIMARY KEY,
+    -> name VARCHAR(20),
+    -> category VARCHAR(30));
+Query OK, 0 rows affected (0.016 sec)
+
+MariaDB [dbms]> SELECT * FROM result;
+Empty set (0.012 sec)
+
+MariaDB [dbms]> delimiter $
+
+MariaDB [dbms]> SET SQL_MODE = "ORACLE";
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [dbms]> CREATE FUNCTION get_category(r INT) RETURN VARCHAR
+    -> AS
+    -> t stud_marks.total_marks%type;
+    -> c result.category%type;
+    -> BEGIN
+    -> SELECT total_marks INTO t FROM stud_marks WHERE roll_no = r;
+    -> c := 'OTHER';
+    -> IF (t <= 1500 AND t >= 990) THEN
+    -> c := 'DISTINCTION';
+    -> END IF;
+    -> IF (t <= 989 AND t >= 900) THEN
+    -> c := 'FIRST CLASS';
+    -> END IF;
+    -> IF (t <= 899 AND t >= 825) THEN
+    -> c := 'HIGHER SECOND CLASS';
+    -> END IF;
+    -> return c;
+    -> END $
+Query OK, 0 rows affected (0.010 sec)
+
+MariaDB [dbms]> CREATE PROCEDURE proc_grade()
+    -> AS
+    -> BEGIN
+    -> FOR student in (SELECT * FROM stud_marks)
+    -> LOOP
+    -> INSERT INTO result VALUES (student.roll_no, student.name, get_category(student.roll_no));
+    -> END LOOP;
+    -> END $
+Query OK, 0 rows affected (0.010 sec)
+
+MariaDB [dbms]> CALL proc_grade; $
+Query OK, 10 rows affected (0.011 sec)
+
+MariaDB [dbms]> SELECT * FROM result; $
++---------+------+---------------------+
+| roll_no | name | category            |
++---------+------+---------------------+
+|       1 | A    | OTHER               |
+|       3 | B    | HIGHER SECOND CLASS |
+|       5 | C    | FIRST CLASS         |
+|       7 | D    | DISTINCTION         |
+|       9 | E    | OTHER               |
++---------+------+---------------------+
+5 rows in set (0.000 sec)
+
+------------------------------END--------------------------------------

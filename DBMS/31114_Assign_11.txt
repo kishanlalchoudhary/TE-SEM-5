@@ -1,0 +1,144 @@
+NAME - Kishanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 26/10/23
+Assignment No - 11
+
+----------------------------------START----------------------------------
+
+> use 31114_db
+switched to db 31114_db
+
+> show collections
+products
+
+> db.createCollection("products");
+{ "ok" : 1 }
+
+> db.products.insertMany(
+  [  {"name" : "samsung m12", "brand" : "samsung", "cost" : 12000, "qty" : 21}, 
+     {"name" : "iphone 12", "brand" : "apple", "cost" : 80000, "qty" : 20}, 
+     {"name" : "oneplus t", "brand" : "oneplus", "cost" : 45000, "qty" : 30}, 
+     {"name" : "motorola m3", "brand" : "motorola", "cost" : 30000, "qty" : 50}, 
+     {"name" : "samsung a12", "brand" : "samsung", "cost" : 32000, "qty" : 25}, 
+     {"name" : "iphone 13", "brand" : "apple", "cost" : 89000, "qty" : 45}, 
+     {"name" : "oneplus g", "brand" : "oneplus", "cost" : 45000, "qty" : 63}
+  ]
+)
+{
+  acknowledged: true,
+  insertedIds: {
+    ObjectId("653a233d718a2bdd2cd21b79"),
+    ObjectId("653a233d718a2bdd2cd21b7a"),
+    ObjectId("653a233d718a2bdd2cd21b7b"),
+    ObjectId("653a233d718a2bdd2cd21b7c"),
+    ObjectId("653a233d718a2bdd2cd21b7d"),
+    ObjectId("653a233d718a2bdd2cd21b7e"),
+    ObjectId("653a233d718a2bdd2cd21b7f")
+  }
+}
+
+> db.products.aggregate();
+[
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b79"),
+    name: 'samsung m12',
+    brand: 'samsung',
+    cost: 12000,
+    qty: 21
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7a"),
+    name: 'iphone 12',
+    brand: 'apple',
+    cost: 80000,
+    qty: 20
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7b"),
+    name: 'oneplus t',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 30
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7c"),
+    name: 'motorola m3',
+    brand: 'motorola',
+    cost: 30000,
+    qty: 50
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7d"),
+    name: 'samsung a12',
+    brand: 'samsung',
+    cost: 32000,
+    qty: 25
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7e"),
+    name: 'iphone 13',
+    brand: 'apple',
+    cost: 89000,
+    qty: 45
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7f"),
+    name: 'oneplus g',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 63
+  }
+]
+
+> var mapFunction = function(){emit(this.brand, this.qty*this.cost)};
+
+> var reduceFunction = function(key, values){return Array.sum(values)};
+
+> db.products.mapReduce(mapFunction, reduceFunction, {out:"brand_total_cost"});
+{ result: 'total_cost_of_products', ok: 1 }
+
+> db.brand_total_cost.find();
+[
+  { _id: 'oneplus', value: 4185000 },
+  { _id: 'motorola', value: 1500000 },
+  { _id: 'samsung', value: 1052000 },
+  { _id: 'apple', value: 5605000 }
+]
+
+> var mapFunction = function(){emit(this.brand, {cost:this.cost, qty:this.qty})};
+
+> var reduceFunction = function(key, values){
+... var reduceValue = {total_product:0, total_qty:0, average_cost:0};
+... values.forEach(function(value){
+... reduceValue.total_product += 1;
+... reduceValue.total_qty += value.qty;
+... reduceValue.average_cost += value.cost;});
+... reduceValue.average_cost /= reduceValue.total_product;
+... return reduceValue;}
+
+> db.products.mapReduce(mapFunction, reduceFunction, {out:"brand_stats"});
+{ result: 'brand_stats', ok: 1 }
+
+> db.brand_stats.find();
+[
+  {
+    _id: 'oneplus',
+    value: { total_product: 2, total_qty: 93, average_cost: 45000 }
+  },
+  {
+    _id: 'motorola',
+    value: { total_product: 1, total_qty: 50, average_cost: 30000 }
+  },
+  {
+    _id: 'samsung',
+    value: { total_product: 2, total_qty: 46, average_cost: 22000 }
+  },
+  {
+    _id: 'apple',
+    value: { total_product: 2, total_qty: 65, average_cost: 84500 }
+  }
+]
+
+-----------------------------------END-----------------------------------

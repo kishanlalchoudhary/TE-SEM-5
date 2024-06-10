@@ -1,0 +1,354 @@
+
+NAME - KIshanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 07/08/23
+Assignment No - 03 B
+
+------------------------------START------------------------------------
+
+SHOW DATABASES;
+
++--------------------+
+| Database           |
++--------------------+
+| 31114_db           |
+| information_schema |
++--------------------+
+
+USE 31114_db;
+
+CREATE TABLE Training_2B ( T_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Tcompany_name VARCHAR(255), T_fee INT, T_date DATE);
+
+ALTER TABLE Training_2B MODIFY T_date INT;
+
+CREATE TABLE Placement_Drive_2B (Drive_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Company_name VARCHAR(255), Package INT, Location VARCHAR(255));
+
+CREATE TABLE Student_2B (S_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Drive_id INT, S_name VARCHAR(255), CGPA FLOAT, S_branch VARCHAR(255), FOREIGN KEY (Drive_id) REFERENCES Placement_Drive_2B(Drive_id) ON DELETE CASCADE);
+
+SHOW TABLES;
+
++--------------------+
+| Tables_in_31114_db |
++--------------------+
+| Placement_Drive_2B |
+| Student_2B         |
+| Training_2B        |
++--------------------+
+
+MariaDB [31114_db]> SELECT * FROM Student_2B;
++------+----------+-----------+------+----------+------+
+| S_id | Drive_id | S_name    | CGPA | S_branch | T_id |
++------+----------+-----------+------+----------+------+
+|    1 |    21245 | Maitreyee |  9.5 | Comp     |  101 |
+|    2 |    21246 | Kartiki   |  9.4 | Comp     |  102 |
+|    4 |    21248 | Parag     |  9.5 | Comp     |  104 |
+|    5 |    21249 | Divya     |  9.5 | Comp     |  105 |
+|    6 |    21250 | Vedant    |  9.7 | Comp     |  106 |
+|    7 |    21251 | Anushka   |  9.3 | Comp     |  107 |
+|    8 |    21252 | Bhakti    |  9.7 | Comp     |  108 |
++------+----------+-----------+------+----------+------+
+7 rows in set (0.001 sec)
+
+MariaDB [31114_db]> SELECT * FROM Placement_Drive_2B;
++----------+--------------+---------+-----------+
+| Drive_id | Company_name | Package | Location  |
++----------+--------------+---------+-----------+
+|    21245 | DELL         |  200000 | Pune      |
+|    21246 | APPLE        |  400000 | Mumbai    |
+|    21247 | BARCLAYS     |  300000 | Bengaluru |
+|    21248 | PFIZER       |  400000 | Hyderabad |
+|    21249 | INFOSYS      |  450000 | Mumbai    |
+|    21250 | DB           |  540000 | Pune      |
+|    21251 | PHONEPE      |  340000 | Chennai   |
+|    21252 | SAMSUNG      |  650000 | Delhi     |
+|    21253 | FACEBOOK     |  250000 | Delhi     |
++----------+--------------+---------+-----------+
+9 rows in set (0.001 sec)
+
+MariaDB [31114_db]> SELECT * FROM Training_2B;
++------+---------------+-------+--------+
+| T_id | Tcompany_name | T_fee | T_date |
++------+---------------+-------+--------+
+|  100 | INFOSYS       | 11500 |   2021 |
+|  101 | VERZEO        | 10500 |   2020 |
+|  102 | GOOGLE        | 23000 |   2021 |
+|  103 | MERINO        |  5000 |   2022 |
+|  104 | COGNIZANT     |  7600 |   2020 |
+|  105 | KODEIT        |  7521 |   2021 |
+|  106 | CUMMINS       |  4300 |   2022 |
+|  107 | SIEMENS       | 11270 |   2021 |
+|  108 | MASTERCARD    |  6500 |   2020 |
+|  109 | APPLE         |  7475 |   2021 |
++------+---------------+-------+--------+
+10 rows in set (0.001 sec)
+
+Query - 1
+
+MariaDB [31114_db]> SELECT * FROM Student_2B NATURAL JOIN Placement_Drive_2B;
++----------+------+-----------+------+----------+------+--------------+---------+-----------+
+| Drive_id | S_id | S_name    | CGPA | S_branch | T_id | Company_name | Package | Location  |
++----------+------+-----------+------+----------+------+--------------+---------+-----------+
+|    21245 |    1 | Maitreyee |  9.5 | Comp     |  101 | DELL         |  200000 | Pune      |
+|    21246 |    2 | Kartiki   |  9.4 | Comp     |  102 | APPLE        |  400000 | Mumbai    |
+|    21248 |    4 | Parag     |  9.5 | Comp     |  104 | PFIZER       |  400000 | Hyderabad |
+|    21249 |    5 | Divya     |  9.5 | Comp     |  105 | INFOSYS      |  450000 | Mumbai    |
+|    21250 |    6 | Vedant    |  9.7 | Comp     |  106 | DB           |  540000 | Pune      |
+|    21251 |    7 | Anushka   |  9.3 | Comp     |  107 | PHONEPE      |  340000 | Chennai   |
+|    21252 |    8 | Bhakti    |  9.7 | Comp     |  108 | SAMSUNG      |  650000 | Delhi     |
++----------+------+-----------+------+----------+------+--------------+---------+-----------+
+7 rows in set (0.001 sec)
+
+Query - 2
+
+MariaDB [31114_db]> SELECT s.S_name, p.Company_name FROM Student_2B s INNER JOIN Placement_Drive_2B p using(Drive_id);
++-----------+--------------+
+| S_name    | Company_name |
++-----------+--------------+
+| Maitreyee | DELL         |
+| Kartiki   | APPLE        |
+| Parag     | PFIZER       |
+| Divya     | INFOSYS      |
+| Vedant    | DB           |
+| Anushka   | PHONEPE      |
+| Bhakti    | SAMSUNG      |
++-----------+--------------+
+7 rows in set (0.001 sec)
+
+Query - 3
+
+MariaDB [31114_db]> SELECT s.S_name, s.S_branch FROM Student_2B s RIGHT JOIN Placement_Drive_2B p using(Drive_id) WHERE p.Package = 400000;
++---------+----------+
+| S_name  | S_branch |
++---------+----------+
+| Kartiki | Comp     |
+| Parag   | Comp     |
++---------+----------+
+2 rows in set (0.562 sec)
+
+Query - 4
+
+MariaDB [31114_db]> SELECT s.S_name, p.Company_name FROM Student_2B s LEFT JOIN Placement_Drive_2B p using(Drive_id) INNER JOIN Training_2B t using(T_id) WHERE T_fee >
+1000;
++-----------+--------------+
+| S_name    | Company_name |
++-----------+--------------+
+| Maitreyee | DELL         |
+| Kartiki   | APPLE        |
+| Parag     | PFIZER       |
+| Divya     | INFOSYS      |
+| Vedant    | DB           |
+| Anushka   | PHONEPE      |
+| Bhakti    | SAMSUNG      |
++-----------+--------------+
+7 rows in set (0.001 sec)
+
+Query - 5
+
+MariaDB [31114_db]> SELECT t.* FROM Student_2B s INNER JOIN Training_2B t using(T_id) WHERE s.S_name = "Anushka" AND T_date = 2021;
++------+---------------+-------+--------+
+| T_id | Tcompany_name | T_fee | T_date |
++------+---------------+-------+--------+
+|  107 | SIEMENS       | 11270 |   2021 |
++------+---------------+-------+--------+
+1 row in set (0.001 sec)
+
+Query - 6
+
+MariaDB [31114_db]> SELECT count(Tcompany_name) company_count FROM Training_2B WHERE T_date < 2021 ;
++---------------+
+| company_count |
++---------------+
+|             3 |
++---------------+
+1 row in set (0.001 sec)
+
+Query - 7
+
+MariaDB [31114_db]> SELECT S_name FROM Student_2B INNER JOIN (SELECT * FROM Placement_Drive_2B WHERE Company_name = "PHONEPE" AND Location = "Chennai") p using(Drive_id);
++---------+
+| S_name  |
++---------+
+| Anushka |
++---------+
+1 row in set (0.001 sec)
+
+MariaDB [31114_db]> SELECT S_name FROM Student_2B INNER JOIN Placement_Drive_2B p using(Drive_id) WHERE p.Company_name = "PHONEPE" AND p.Location = "Maharashtra";
+Empty set (0.001 sec)
+
+Query - 8
+
+MariaDB [31114_db]> SELECT S_name FROM Student_2B INNER JOIN (SELECT * FROM Training_2B WHERE Tcompany_name = "SIEMENS" AND T_date = "2021") t using(T_id);
++---------+
+| S_name  |
++---------+
+| Anushka |
++---------+
+1 row in set (0.001 sec)
+
+MariaDB [31114_db]> SELECT S_name FROM Student_2B INNER JOIN (SELECT * FROM Training_2B WHERE Tcompany_name = "Mastercard" AND T_date = "2020") t using(T_id);
+Empty set (0.001 sec)
+
+Query - 9
+
+MariaDB [31114_db]> CREATE VIEW Student_Information AS SELECT * FROM Student_2B s INNER JOIN Training_2B t using(T_id);
+Query OK, 0 rows affected (1.674 sec)
+
+MariaDB [31114_db]> Select * FROM Student_Information;
++------+------+----------+-----------+------+----------+---------------+-------+--------+
+| T_id | S_id | Drive_id | S_name    | CGPA | S_branch | Tcompany_name | T_fee | T_date |
++------+------+----------+-----------+------+----------+---------------+-------+--------+
+|  101 |    1 |    21245 | Maitreyee |  9.5 | Comp     | VERZEO        | 10500 |   2020 |
+|  102 |    2 |    21246 | Kartiki   |  9.4 | Comp     | GOOGLE        | 23000 |   2021 |
+|  104 |    4 |    21248 | Parag     |  9.5 | Comp     | COGNIZANT     |  7600 |   2020 |
+|  105 |    5 |    21249 | Divya     |  9.5 | Comp     | KODEIT        |  7521 |   2021 |
+|  106 |    6 |    21250 | Vedant    |  9.7 | Comp     | CUMMINS       |  4300 |   2022 |
+|  107 |    7 |    21251 | Anushka   |  9.3 | Comp     | SIEMENS       | 11270 |   2021 |
+|  108 |    8 |    21252 | Bhakti    |  9.7 | Comp     | MASTERCARD    |  6500 |   2020 |
++------+------+----------+-----------+------+----------+---------------+-------+--------+
+7 rows in set (0.002 sec)
+
+MariaDB [31114_db]> DROP VIEW Student_Information;
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [31114_db]> Select * FROM Student_Information;
+ERROR 1146 (42S02): Table '31114_db.Student_Information' doesn't exist
+
+Query - 10
+
+Complex view creation - 
+
+MariaDB [31114_db]> CREATE VIEW Student_Details AS SELECT s.S_name, p.Company_name, t.Tcompany_name FROM Student_2B s INNER JOIN Placement_Drive_2B p using(Drive_id) INNE
+Query OK, 0 rows affected (0.033 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_Details;
++-----------+--------------+---------------+
+| S_name    | Company_name | Tcompany_name |
++-----------+--------------+---------------+
+| Maitreyee | DELL         | VERZEO        |
+| Kartiki   | APPLE        | GOOGLE        |
+| Parag     | PFIZER       | COGNIZANT     |
+| Divya     | INFOSYS      | KODEIT        |
+| Vedant    | DB           | CUMMINS       |
+| Anushka   | PHONEPE      | SIEMENS       |
+| Bhakti    | SAMSUNG      | MASTERCARD    |
++-----------+--------------+---------------+
+7 rows in set (0.001 sec)
+
+Simple view creation -
+
+MariaDB [31114_db]> CREATE VIEW Student_data AS SELECT S_name, S_branch FROM Student_2B WHERE S_branch = "Comp";
+Query OK, 0 rows affected (0.058 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
++-----------+----------+
+| S_name    | S_branch |
++-----------+----------+
+| Maitreyee | Comp     |
+| Kartiki   | Comp     |
+| Parag     | Comp     |
+| Divya     | Comp     |
+| Vedant    | Comp     |
+| Anushka   | Comp     |
+| Bhakti    | Comp     |
++-----------+----------+
+7 rows in set (0.001 sec)
+
+Simple view update columns -
+
+MariaDB [31114_db]> CREATE OR REPLACE VIEW Student_data AS SELECT s.S_name, s.S_branch, s.CGPA FROM Student_2B s;
+Query OK, 0 rows affected (0.025 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
++-----------+----------+------+
+| S_name    | S_branch | CGPA |
++-----------+----------+------+
+| Maitreyee | Comp     |  9.5 |
+| Kartiki   | Comp     |  9.4 |
+| Parag     | Comp     |  9.5 |
+| Divya     | Comp     |  9.5 |
+| Vedant    | Comp     |  9.7 |
+| Anushka   | Comp     |  9.3 |
+| Bhakti    | Comp     |  9.7 |
++-----------+----------+------+
+7 rows in set (0.001 sec)
+
+Simple view deletion -
+
+MariaDB [31114_db]> DELETE FROM Student_data WHERE CGPA > 9.5;
+Query OK, 2 rows affected (0.075 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
++-----------+----------+------+
+| S_name    | S_branch | CGPA |
++-----------+----------+------+
+| Maitreyee | Comp     |  9.5 |
+| Kartiki   | Comp     |  9.4 |
+| Parag     | Comp     |  9.5 |
+| Divya     | Comp     |  9.5 |
+| Anushka   | Comp     |  9.3 |
++-----------+----------+------+
+5 rows in set (0.001 sec)
+
+Simple view insertion -
+
+MariaDB [31114_db]> CREATE OR REPLACE VIEW Student_data AS SELECT * FROM Student_2B s;
+Query OK, 0 rows affected (0.033 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
++------+----------+-----------+------+----------+------+
+| S_id | Drive_id | S_name    | CGPA | S_branch | T_id |
++------+----------+-----------+------+----------+------+
+|    1 |    21245 | Maitreyee |  9.5 | Comp     |  101 |
+|    2 |    21246 | Kartiki   |  9.4 | Comp     |  102 |
+|    4 |    21248 | Parag     |  9.5 | Comp     |  104 |
+|    5 |    21249 | Divya     |  9.5 | Comp     |  105 |
+|    7 |    21251 | Anushka   |  9.3 | Comp     |  107 |
++------+----------+-----------+------+----------+------+
+5 rows in set (0.001 sec)
+
+MariaDB [31114_db]> INSERT INTO Student_data VALUES (10, 21250, "Kishanlal", 9.8, "Comp", 106);
+Query OK, 1 row affected (0.034 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
++------+----------+-----------+------+----------+------+
+| S_id | Drive_id | S_name    | CGPA | S_branch | T_id |
++------+----------+-----------+------+----------+------+
+|    1 |    21245 | Maitreyee |  9.5 | Comp     |  101 |
+|    2 |    21246 | Kartiki   |  9.4 | Comp     |  102 |
+|    4 |    21248 | Parag     |  9.5 | Comp     |  104 |
+|    5 |    21249 | Divya     |  9.5 | Comp     |  105 |
+|    7 |    21251 | Anushka   |  9.3 | Comp     |  107 |
+|   10 |    21250 | Kishanlal |  9.8 | Comp     |  106 |
++------+----------+-----------+------+----------+------+
+6 rows in set (0.001 sec)
+
+Simple view updation -
+
+MariaDB [31114_db]> UPDATE Student_data SET S_name = "Abhishek" WHERE s_id = 10;
+Query OK, 1 row affected (0.032 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
++------+----------+-----------+------+----------+------+
+| S_id | Drive_id | S_name    | CGPA | S_branch | T_id |
++------+----------+-----------+------+----------+------+
+|    1 |    21245 | Maitreyee |  9.5 | Comp     |  101 |
+|    2 |    21246 | Kartiki   |  9.4 | Comp     |  102 |
+|    4 |    21248 | Parag     |  9.5 | Comp     |  104 |
+|    5 |    21249 | Divya     |  9.5 | Comp     |  105 |
+|    7 |    21251 | Anushka   |  9.3 | Comp     |  107 |
+|   10 |    21250 | Abhishek  |  9.8 | Comp     |  106 |
++------+----------+-----------+------+----------+------+
+6 rows in set (0.001 sec)
+
+Simple view drop view -
+
+MariaDB [31114_db]> DROP VIEW Student_data;
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [31114_db]> SELECT * FROM Student_data;
+ERROR 1146 (42S02): Table '31114_db.Student_data' doesn't exist
+
+------------------------------END------------------------------------------------

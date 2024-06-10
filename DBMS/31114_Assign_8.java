@@ -1,0 +1,195 @@
+package myPackage;
+
+import java.util.*;
+import java.sql.*;
+
+public class JDBC_MYSQL {
+	public static void main(String[] args) {
+		Connection connection = null;
+        Statement statement;
+        ResultSet resultset;
+        Scanner sc = new Scanner(System.in);
+        
+        try {
+        	Class.forName("org.mariadb.jdbc.Driver");
+        	connection = DriverManager.getConnection(
+        			"jdbc:mariadb://localhost:3307/dbms",
+        			"root", "Kisan@123"
+        	);
+        	
+        	statement = connection.createStatement();
+        	String tableName;
+            
+            while (true) {
+            	
+                System.out.println(
+                        "\n---------------------------------\nMain Menu \n1. Read \n2. Insert  \n3. Update \n4. Delete\n0. Exit \n--------------------------------- \n");
+                
+                System.out.print("Enter the choice : ");
+                int choice = sc.nextInt();
+                System.out.println();
+                
+                if (choice == 1) {
+                	
+                	// READ TABLE
+                	
+                    System.out.print("Enter the name of the table you want to read : ");
+                    tableName = sc.next();
+                    
+                    String readTableQuery = "SELECT * FROM " + tableName + ";";
+                    resultset = statement.executeQuery(readTableQuery);
+                    
+                    System.out.println();
+                    
+                    ResultSetMetaData resultSetMetaData = resultset.getMetaData();
+                    int colCount = resultSetMetaData.getColumnCount();
+                    for (int i = 1; i <= colCount; i++) {
+                        System.out.print(resultSetMetaData.getColumnName(i) + "\t");
+                    }
+                    
+                    System.out.println();
+                    
+                    while (resultset.next()) {
+                        for (int i = 1; i <= colCount; i++) {
+                            System.out.print(resultset.getString(i) + "\t");
+                        }
+                        System.out.println();
+                    }
+                    
+                } else if (choice == 2) {
+                	
+                	// INSERT INTO TABLE
+                	
+                    System.out.print("Enter the name of the table you want to insert into : ");
+                    tableName = sc.next();
+
+                    // Get the column names from the table
+                    String readTableQuery = "SELECT * FROM " + tableName + ";";
+                    resultset = statement.executeQuery(readTableQuery);
+                    ResultSetMetaData resultSetMetaData = resultset.getMetaData();
+                    int colCount = resultSetMetaData.getColumnCount();
+
+                    // Prepare the INSERT query
+                    StringBuilder insertQuery = new StringBuilder("INSERT INTO " + tableName + " (");
+                    for (int i = 1; i <= colCount; i++) {
+                        insertQuery.append(resultSetMetaData.getColumnName(i));
+                        if (i < colCount) {
+                            insertQuery.append(", ");
+                        }
+                    }
+                    insertQuery.append(") VALUES (");
+
+                    // Collect values to insert
+                    for (int i = 1; i <= colCount; i++) {
+                        System.out.print("Enter the value for " + resultSetMetaData.getColumnName(i) + " : ");
+                        String value = sc.next();
+                        insertQuery.append("'" + value + "'");
+                        if (i < colCount) {
+                            insertQuery.append(", ");
+                        }
+                    }
+                    insertQuery.append(");");
+                    
+                    System.out.println();
+
+                    // Execute the INSERT query
+                    try {
+                        statement.executeUpdate(insertQuery.toString());
+                        System.out.println("Data inserted successfully.");
+                    } catch (SQLException e) {
+                        System.out.println("Error inserting data: " + e.getMessage());
+                    }
+                    
+                } else if (choice == 3) {
+                	
+                	// UPDATE
+                	
+                    System.out.print("Enter the name of the table you want to update : ");
+                    tableName = sc.next();
+                    
+                    System.out.println();
+
+                    String readTableQuery = "SELECT * FROM " + tableName + ";";
+                    resultset = statement.executeQuery(readTableQuery);
+                    ResultSetMetaData resultSetMetaData = resultset.getMetaData();
+                    int colCount = resultSetMetaData.getColumnCount();
+                    
+                    for (int i = 1; i <= colCount; i++) {
+                        System.out.print(i + " - " + resultSetMetaData.getColumnName(i) + "\t");
+                    }
+                    
+                    System.out.println();
+
+                    System.out.print("\nEnter the number of column you want to update: ");
+                    int colToUpdate = sc.nextInt();
+                    
+                    System.out.println();
+
+                    System.out.print(
+                            "Enter the updated value for the column " + resultSetMetaData.getColumnName(colToUpdate) + " : ");
+                    String afterUpdate = sc.next();
+                    
+                    System.out.println();
+
+                    System.out.print("Enter the updation rule (colName=value) : ");
+                    String updateRule = sc.next();
+
+                    String updateTableQuery = "UPDATE " + tableName + " SET "
+                            + resultSetMetaData.getColumnName(colToUpdate) + "=" + afterUpdate + " WHERE "
+                            + updateRule + ";";
+                    
+                    System.out.println();
+
+                    try {
+                        int rowsAffected = statement.executeUpdate(updateTableQuery);
+
+                        if (rowsAffected > 0) {
+                            System.out.println("Update successful " + rowsAffected + " row(s) affected.");
+                        } else {
+                            System.out.println("No rows updated.");
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Error updating data: " + e.getMessage());
+                    }
+                    
+                } else if (choice == 4) { 
+                	
+                	// DELETE
+                	
+                	System.out.print("Enter the name of the table you want to delete : ");
+                    tableName = sc.next();
+                    
+                    System.out.println();
+                    
+                    System.out.print("Enter the deletion rule (colName=value) : ");
+                    String deleteRule = sc.next();
+
+                    String deleteTableQuery = "DELETE FROM " + tableName + " WHERE " + deleteRule + ";";
+                    
+                    System.out.println();
+
+                    try {
+                        statement.executeUpdate(deleteTableQuery);
+                        System.out.println("Data deleted successfully.");
+                    } catch (SQLException e) {
+                        System.out.println("Error deleting data: " + e.getMessage());
+                    }
+
+                } else if (choice == 0) {
+                    System.out.println("Exiting...");
+                    break;
+                }
+
+            }
+
+            sc.close();
+            statement.close();
+            connection.close();
+            
+        }catch (Exception e) {
+            System.out.println(e);
+        }
+        
+//        System.out.println("Hello World of JDBC");
+	}
+}

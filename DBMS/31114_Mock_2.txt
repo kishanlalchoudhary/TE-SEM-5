@@ -1,0 +1,290 @@
+NAME - Kishanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMSL Mock 2
+DATE - 30/10/23
+Assignment No - 10
+
+----------------------------------START----------------------------------
+
+> db.prod.find()
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c678"), "name" : "samsung m12", "brand" : "samsung", "cost" : 12000, "qty" : 21 }
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c679"), "name" : "iphone 12", "brand" : "apple", "cost" : 80000, "qty" : 20 }
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c67a"), "name" : "oneplus t", "brand" : "oneplus", "cost" : 45000, "qty" : 30 }
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c67b"), "name" : "motorola m3", "brand" : "motorola", "cost" : 30000, "qty" : 50 }
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c67c"), "name" : "samsung a12", "brand" : "samsung", "cost" : 32000, "qty" : 25 }
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c67d"), "name" : "iphone 13", "brand" : "apple", "cost" : 89000, "qty" : 45 }
+{ "_id" : ObjectId("6539e6e661f10b5dfdc0c67e"), "name" : "oneplus g", "brand" : "oneplus", "cost" : 45000, "qty" : 63 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", total_products : {$sum : 1}}}])
+{ "_id" : "samsung", "total_products" : 2 }
+{ "_id" : "apple", "total_products" : 2 }
+{ "_id" : "oneplus", "total_products" : 2 }
+{ "_id" : "motorola", "total_products" : 1 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", total_cost : {$sum : "$cost"}}}])
+{ "_id" : "samsung", "total_cost" : 44000 }
+{ "_id" : "apple", "total_cost" : 169000 }
+{ "_id" : "oneplus", "total_cost" : 90000 }
+{ "_id" : "motorola", "total_cost" : 30000 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}])
+{ "_id" : "samsung", "average_cost" : 22000 }
+{ "_id" : "motorola", "average_cost" : 30000 }
+{ "_id" : "apple", "average_cost" : 84500 }
+{ "_id" : "oneplus", "average_cost" : 45000 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}, {$limit : 1}])
+{ "_id" : "samsung", "average_cost" : 22000 }
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}, {$limit : 3}])
+{ "_id" : "samsung", "average_cost" : 22000 }
+{ "_id" : "motorola", "average_cost" : 30000 }
+{ "_id" : "apple", "average_cost" : 84500 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}, {$skip : 3}])
+{ "_id" : "oneplus", "average_cost" : 45000 }
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}, {$skip : 2}])
+{ "_id" : "apple", "average_cost" : 84500 }
+{ "_id" : "samsung", "average_cost" : 22000 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}, {$sort : {average_cost : 1}}])
+{ "_id" : "samsung", "average_cost" : 22000 }
+{ "_id" : "motorola", "average_cost" : 30000 }
+{ "_id" : "oneplus", "average_cost" : 45000 }
+{ "_id" : "apple", "average_cost" : 84500 }
+
+> db.prod.aggregate([{$group:{_id : "$brand", average_cost : {$avg : "$cost"}}}, {$sort : {average_cost : -1}}])
+{ "_id" : "apple", "average_cost" : 84500 }
+{ "_id" : "oneplus", "average_cost" : 45000 }
+{ "_id" : "motorola", "average_cost" : 30000 }
+{ "_id" : "samsung", "average_cost" : 22000 }
+
+> db.prod.find({brand:"motorola", "name" : "motorola m3"}).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "31110_db.prod",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"$and" : [
+				{
+					"brand" : {
+						"$eq" : "motorola"
+					}
+				},
+				{
+					"name" : {
+						"$eq" : "motorola m3"
+					}
+				}
+			]
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"$and" : [
+					{
+						"brand" : {
+							"$eq" : "motorola"
+						}
+					},
+					{
+						"name" : {
+							"$eq" : "motorola m3"
+						}
+					}
+				]
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 7,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"$and" : [
+					{
+						"brand" : {
+							"$eq" : "motorola"
+						}
+					},
+					{
+						"name" : {
+							"$eq" : "motorola m3"
+						}
+					}
+				]
+			},
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 9,
+			"advanced" : 1,
+			"needTime" : 7,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"direction" : "forward",
+			"docsExamined" : 7
+		}
+	},
+	"serverInfo" : {
+		"host" : "localhost.localdomain",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+
+> db.prod.ensureIndex({name:1, brand:1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+
+> db.prod.getIndexes();
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "31114_db.prod"
+	}
+]
+
+
+> db.prod.find({brand:"motorola", "name" : "motorola m3"}).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "31114_db.prod",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"$and" : [
+				{
+					"brand" : {
+						"$eq" : "motorola"
+					}
+				},
+				{
+					"name" : {
+						"$eq" : "motorola m3"
+					}
+				}
+			]
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"name" : 1,
+					"brand" : 1
+				},
+				"indexName" : "name_1_brand_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"name" : [ ],
+					"brand" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"name" : [
+						"[\"motorola m3\", \"motorola m3\"]"
+					],
+					"brand" : [
+						"[\"motorola\", \"motorola\"]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 1,
+		"executionTimeMillis" : 1,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 1,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 2,
+			"advanced" : 1,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"docsExamined" : 1,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"keyPattern" : {
+					"name" : 1,
+					"brand" : 1
+				},
+				"indexName" : "name_1_brand_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"name" : [ ],
+					"brand" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"name" : [
+						"[\"motorola m3\", \"motorola m3\"]"
+					],
+					"brand" : [
+						"[\"motorola\", \"motorola\"]"
+					]
+				},
+				"keysExamined" : 1,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "localhost.localdomain",
+		"port" : 27017,
+		"version" : "4.2.13",
+		"gitVersion" : "82dd40f60c55dae12426c08fd7150d79a0e28e23"
+	},
+	"ok" : 1
+}
+
+> db.prod.dropIndex("name_1_brand_1");
+{ "nIndexesWas" : 2, "ok" : 1 }
+
+-----------------------------------END-----------------------------------

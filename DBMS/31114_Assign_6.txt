@@ -1,0 +1,211 @@
+
+NAME - KIshanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 17/09/23
+Assignment No - 06
+
+------------------------------START------------------------------------
+
+C:\Program Files\MariaDB 11.1\bin>mariadb -u root -p
+Enter password: *********
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| dbms               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.022 sec)
+
+MariaDB [(none)]> use dbms
+Database changed
+MariaDB [dbms]> show tables;
+Empty set (0.001 sec)
+
+MariaDB [dbms]> CREATE TABLE N_EmpId (
+    -> emp_id INT NOT NULL PRIMARY KEY,
+    -> emp_name VARCHAR(20));
+Query OK, 0 rows affected (0.024 sec)
+
+MariaDB [dbms]> CREATE TABLE O_EmpId (
+    -> emp_id INT NOT NULL PRIMARY KEY,
+    -> emp_name VARCHAR(20));
+Query OK, 0 rows affected (0.034 sec)
+
+MariaDB [dbms]> SHOW TABLES;
++----------------+
+| Tables_in_dbms |
++----------------+
+| n_empid        |
+| o_empid        |
++----------------+
+2 rows in set (0.001 sec)
+
+MariaDB [dbms]> INSERT INTO o_empid VALUES
+    -> (1, "A"),
+    -> (2, "B"),
+    -> (3, "C"),
+    -> (4, "D"),
+    -> (5, "E"),
+    -> (6, "F");
+Query OK, 6 rows affected (0.031 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+MariaDB [dbms]> INSERT INTO n_empid VALUES
+    -> (7, "G"),
+    -> (8, "H"),
+    -> (9, "I"),
+    -> (10, "J"),
+    -> (11, "K"),
+    -> (12, "L");
+Query OK, 6 rows affected (0.014 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+MariaDB [dbms]> SELECT * FROM n_empid;
++--------+----------+
+| emp_id | emp_name |
++--------+----------+
+|      7 | G        |
+|      8 | H        |
+|      9 | I        |
+|     10 | J        |
+|     11 | K        |
+|     12 | L        |
++--------+----------+
+6 rows in set (0.001 sec)
+
+MariaDB [dbms]> SELECT * FROM o_empid;
++--------+----------+
+| emp_id | emp_name |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
++--------+----------+
+6 rows in set (0.001 sec)
+
+MariaDB [dbms]> SET SQL_MODE = "ORACLE";
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [dbms]> DROP PROCEDURE cur_proc;
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [dbms]> CREATE PROCEDURE cur_proc(E INT)
+    -> AS
+    -> BEGIN
+    -> END $
+Query OK, 0 rows affected (0.034 sec)
+
+MariaDB [dbms]> CREATE PROCEDURE cur_proc(E INT)
+    -> AS
+    -> id o_empid.emp_id%type;
+    -> name o_empid.emp_name%type;
+    -> CURSOR cur_empid IS SELECT emp_id, emp_name from o_empid;
+    -> BEGIN
+    -> END $
+Query OK, 0 rows affected (0.010 sec)
+
+MariaDB [dbms]> CREATE PROCEDURE cur_proc(E INT)
+    -> AS
+    -> id o_empid.emp_id%type;
+    -> name o_empid.emp_name%type;
+    -> CURSOR cur_empid(id INT) IS SELECT emp_id, emp_name FROM o_empid WHERE emp_id <= id;
+    -> BEGIN
+    -> OPEN cur_empid(E);
+    -> LOOP
+    -> FETCH cur_empid INTO id, name;
+    -> EXIT WHEN cur_empid%notfound;
+    -> INSERT INTO n_empid(emp_id, emp_name) VALUES (id, name);
+    -> END LOOP;
+    -> CLOSE cur_empid;
+    -> END $
+Query OK, 0 rows affected (0.009 sec)
+
+MariaDB [dbms]> CALL cur_proc(4);
+Query OK, 4 rows affected (0.011 sec)
+
+MariaDB [dbms]> SELECT * FROM o_empid;
++--------+----------+
+| emp_id | emp_name |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
++--------+----------+
+6 rows in set (0.000 sec)
+
+MariaDB [dbms]> SELECT * FROM n_empid;
++--------+----------+
+| emp_id | emp_name |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      7 | G        |
+|      8 | H        |
+|      9 | I        |
+|     10 | J        |
+|     11 | K        |
+|     12 | L        |
++--------+----------+
+10 rows in set (0.001 sec)
+
+MariaDB [dbms]> CALL cur_proc(4); $
+ERROR 1062 (23000): Duplicate entry '1' for key 'PRIMARY'
+
+MariaDB [dbms]> CREATE PROCEDURE cur_proc(E INT)
+    -> AS
+    -> id o_empid.emp_id%type;
+    -> name o_empid.emp_name%type;
+    -> CURSOR cur_empid(id INT) IS SELECT emp_id, emp_name FROM o_empid WHERE emp_id <= id;
+    -> BEGIN
+    -> OPEN cur_empid(E);
+    -> LOOP
+    -> FETCH cur_empid INTO id, name;
+    -> EXIT WHEN cur_empid%notfound;
+    -> INSERT IGNORE INTO n_empid(emp_id, emp_name) VALUES (id, name);
+    -> END LOOP;
+    -> CLOSE cur_empid;
+    -> END $
+Query OK, 0 rows affected (0.008 sec)
+
+MariaDB [dbms]> CALL cur_proc(3);
+    -> $
+Query OK, 0 rows affected, 1 warning (0.001 sec)
+
+MariaDB [dbms]> CALL cur_proc(5);
+    -> $
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [dbms]> SELECT * FROM n_empid; $
++--------+----------+
+| emp_id | emp_name |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      7 | G        |
+|      8 | H        |
+|      9 | I        |
+|     10 | J        |
+|     11 | K        |
+|     12 | L        |
++--------+----------+
+11 rows in set (0.001 sec)
+
+------------------------------END--------------------------------------

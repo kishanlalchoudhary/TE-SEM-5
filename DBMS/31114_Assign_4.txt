@@ -1,0 +1,236 @@
+NAME - KIshanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 15/09/23
+Assignment No - 04
+
+------------------------------START------------------------------------
+
+--------------------------------A--------------------------------------
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| dbms               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.027 sec)
+
+MariaDB [(none)]> USE dbms
+Database changed
+MariaDB [dbms]> SHOW TABLES;
++----------------+
+| Tables_in_dbms |
++----------------+
+| areas          |
+| n_empid        |
+| o_empid        |
+| result         |
+| stud_marks     |
++----------------+
+5 rows in set (0.001 sec)
+
+MariaDB [dbms]> CREATE TABLE borrower (
+    -> roll_no INT NOT NULL PRIMARY KEY,
+    -> name VARCHAR(20),
+    -> date_of_issue DATE,
+    -> book_name VARCHAR(30),
+    -> status VARCHAR(20));
+Query OK, 0 rows affected (0.021 sec)
+
+MariaDB [dbms]> CREATE TABLE fine (
+    -> roll_no INT NOT NULL PRIMARY KEY,
+    -> date DATE,
+    -> amount INT,
+    -> FOREIGN KEY (roll_no) REFERENCES borrower(roll_no));
+Query OK, 0 rows affected (0.018 sec)
+
+MariaDB [dbms]> SET SQL_MODE = "ORACLE";
+Query OK, 0 rows affected (0.003 sec)
+
+MariaDB [dbms]> INSERT INTO borrower VALUES
+    -> (1, 'A', '2023-09-15', 'book1', 'issued'),
+    -> (2, 'B', '2023-09-01', 'book2', 'issued'),
+    -> (3, 'C', '2023-09-20', 'book3', 'issued'),
+    -> (4, 'D', '2023-08-20', 'book4', 'issued'),
+    -> (5, 'E', '2023-07-20', 'book5', 'issued');
+Query OK, 5 rows affected (0.092 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [dbms]> SELECT * FROM borrower;
++---------+------+---------------+-----------+--------+
+| roll_no | name | date_of_issue | book_name | status |
++---------+------+---------------+-----------+--------+
+|       1 | A    | 2023-09-15    | book1     | issued |
+|       2 | B    | 2023-09-01    | book2     | issued |
+|       3 | C    | 2023-09-20    | book3     | issued |
+|       4 | D    | 2023-08-20    | book4     | issued |
+|       5 | E    | 2023-07-20    | book5     | issued |
++---------+------+---------------+-----------+--------+
+5 rows in set (0.001 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
+Empty set (0.009 sec)
+
+MariaDB [dbms]> DELIMITER $
+
+MariaDB [dbms]> CREATE PROCEDURE calc_fine(R INT, N VARCHAR(20))
+    -> AS
+    -> days INT;
+    -> fine INT;
+    -> issue_date DATE;
+    -> BEGIN
+    -> SELECT date_of_issue INTO issue_date FROM borrower WHERE roll_no = R AND name = N;
+    -> days := DATEDIFF(CURDATE(), issue_date);
+    -> IF (days >= 15 AND days <= 30) THEN
+    -> fine := days*5;
+    -> END IF;
+    -> IF (days > 30) THEN
+    -> fine := days*50;
+    -> END IF;
+    -> IF (fine IS NOT NULL) THEN
+    -> UPDATE borrower SET status = 'returned' WHERE roll_no = R AND name = N;
+    -> INSERT INTO fine VALUES (R, CURDATE(), fine);
+    -> END IF;
+    -> END $
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [dbms]> DELIMITER ;
+
+MariaDB [dbms]> CALL calc_fine(1, 'A');
+Query OK, 1 row affected (0.001 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
+Empty set (0.001 sec)
+
+MariaDB [dbms]> CALL calc_fine(2, 'B');
+Query OK, 2 rows affected (0.004 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
++---------+------------+--------+
+| roll_no | date       | amount |
++---------+------------+--------+
+|       2 | 2023-09-23 |    110 |
++---------+------------+--------+
+1 row in set (0.000 sec)
+
+MariaDB [dbms]> CALL calc_fine(3, 'C');
+Query OK, 1 row affected (0.001 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
++---------+------------+--------+
+| roll_no | date       | amount |
++---------+------------+--------+
+|       2 | 2023-09-23 |    110 |
++---------+------------+--------+
+1 row in set (0.000 sec)
+
+MariaDB [dbms]> CALL calc_fine(4, 'D');
+Query OK, 2 rows affected (0.004 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
++---------+------------+--------+
+| roll_no | date       | amount |
++---------+------------+--------+
+|       2 | 2023-09-23 |    110 |
+|       4 | 2023-09-23 |   1700 |
++---------+------------+--------+
+2 rows in set (0.007 sec)
+
+MariaDB [dbms]> CALL calc_fine(5, 'E');
+Query OK, 2 rows affected (0.004 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
++---------+------------+--------+
+| roll_no | date       | amount |
++---------+------------+--------+
+|       2 | 2023-09-23 |    110 |
+|       4 | 2023-09-23 |   1700 |
+|       5 | 2023-09-23 |   3250 |
++---------+------------+--------+
+3 rows in set (0.000 sec)
+
+MariaDB [dbms]> CALL calc_fine(6, 'F');
+Query OK, 0 rows affected, 1 warning (0.001 sec)
+
+MariaDB [dbms]> SELECT * FROM fine;
++---------+------------+--------+
+| roll_no | date       | amount |
++---------+------------+--------+
+|       2 | 2023-09-23 |    110 |
+|       4 | 2023-09-23 |   1700 |
+|       5 | 2023-09-23 |   3250 |
++---------+------------+--------+
+3 rows in set (0.000 sec)
+
+--------------------------------B--------------------------------------
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| dbms               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.021 sec)
+
+MariaDB [(none)]> USE dbms;
+Database changed
+
+MariaDB [DBMS]> SHOW TABLES;
++----------------+
+| Tables_in_dbms |
++----------------+
+| n_empid        |
+| o_empid        |
+| result         |
+| stud_marks     |
++----------------+
+4 rows in set (0.001 sec)
+
+MariaDB [DBMS]> CREATE TABLE areas (radius INT NOT NULL PRIMARY KEY, area FLOAT);
+Query OK, 0 rows affected (0.020 sec)
+
+MariaDB [DBMS]> SELECT * FROM areas;
+Empty set (0.001 sec)
+
+MariaDB [DBMS]> SET SQL_MODE = "ORACLE";
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [DBMS]> delimiter $
+
+MariaDB [DBMS]> DECLARE
+    -> r INT;
+    -> ar FLOAT;
+    -> BEGIN
+    -> FOR r IN 5..9
+    -> LOOP
+    -> ar := 3.14*r*r;
+    -> INSERT INTO areas VALUES (r, ar);
+    -> END LOOP;
+    -> END $
+Query OK, 5 rows affected (0.016 sec)
+
+MariaDB [DBMS]> delimiter ;
+
+MariaDB [DBMS]> SELECT * FROM areas;
++--------+--------+
+| radius | area   |
++--------+--------+
+|      5 |   78.5 |
+|      6 | 113.04 |
+|      7 | 153.86 |
+|      8 | 200.96 |
+|      9 | 254.34 |
++--------+--------+
+5 rows in set (0.001 sec)
+
+------------------------------END--------------------------------------

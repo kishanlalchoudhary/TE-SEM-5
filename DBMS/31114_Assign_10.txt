@@ -1,0 +1,441 @@
+NAME - Kishanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 26/10/23
+Assignment No - 10
+
+----------------------------------START----------------------------------
+
+> use 31114_db
+switched to db 31114_db
+
+> show collections
+products
+
+> db.createCollection("products");
+{ "ok" : 1 }
+
+> db.products.insertMany(
+  [  {"name" : "samsung m12", "brand" : "samsung", "cost" : 12000, "qty" : 21}, 
+     {"name" : "iphone 12", "brand" : "apple", "cost" : 80000, "qty" : 20}, 
+     {"name" : "oneplus t", "brand" : "oneplus", "cost" : 45000, "qty" : 30}, 
+     {"name" : "motorola m3", "brand" : "motorola", "cost" : 30000, "qty" : 50}, 
+     {"name" : "samsung a12", "brand" : "samsung", "cost" : 32000, "qty" : 25}, 
+     {"name" : "iphone 13", "brand" : "apple", "cost" : 89000, "qty" : 45}, 
+     {"name" : "oneplus g", "brand" : "oneplus", "cost" : 45000, "qty" : 63}
+  ]
+)
+{
+  acknowledged: true,
+  insertedIds: {
+    ObjectId("653a233d718a2bdd2cd21b79"),
+    ObjectId("653a233d718a2bdd2cd21b7a"),
+    ObjectId("653a233d718a2bdd2cd21b7b"),
+    ObjectId("653a233d718a2bdd2cd21b7c"),
+    ObjectId("653a233d718a2bdd2cd21b7d"),
+    ObjectId("653a233d718a2bdd2cd21b7e"),
+    ObjectId("653a233d718a2bdd2cd21b7f")
+  }
+}
+
+> db.products.aggregate();
+[
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b79"),
+    name: 'samsung m12',
+    brand: 'samsung',
+    cost: 12000,
+    qty: 21
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7a"),
+    name: 'iphone 12',
+    brand: 'apple',
+    cost: 80000,
+    qty: 20
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7b"),
+    name: 'oneplus t',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 30
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7c"),
+    name: 'motorola m3',
+    brand: 'motorola',
+    cost: 30000,
+    qty: 50
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7d"),
+    name: 'samsung a12',
+    brand: 'samsung',
+    cost: 32000,
+    qty: 25
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7e"),
+    name: 'iphone 13',
+    brand: 'apple',
+    cost: 89000,
+    qty: 45
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7f"),
+    name: 'oneplus g',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 63
+  }
+]
+
+> db.products.aggregate([{$group:{_id:"$brand"}}]);
+[
+  { _id: 'samsung' },
+  { _id: 'apple' },
+  { _id: 'oneplus' },
+  { _id: 'motorola' }
+]
+
+> db.products.aggregate([{$group:{_id:"$brand", count:{$sum : 1}}}]);
+[
+  { _id: 'apple', count: 2 },
+  { _id: 'motorola', count: 1 },
+  { _id: 'oneplus', count: 2 },
+  { _id: 'samsung', count: 2 }
+]
+
+> db.products.aggregate([{$group:{_id:"$brand", totalQuantity:{$sum:"$qty"}}}]);
+[
+  { _id: 'apple', totalQuantity: 65 },
+  { _id: 'oneplus', totalQuantity: 93 },
+  { _id: 'samsung', totalQuantity: 46 },
+  { _id: 'motorola', totalQuantity: 50 }
+]
+
+> db.products.aggregate([{$group:{_id:"$brand", averageCost:{$avg:"$cost"}}}]);
+[
+  { _id: 'apple', averageCost: 84500 },
+  { _id: 'oneplus', averageCost: 45000 },
+  { _id: 'samsung', averageCost: 22000 },
+  { _id: 'motorola', averageCost: 30000 }
+]
+
+> db.products.aggregate([{$group:{_id:"$brand", minCost:{$min:"$cost"}}}]);
+[
+  { _id: 'apple', minCost: 80000 },
+  { _id: 'oneplus', minCost: 45000 },
+  { _id: 'samsung', minCost: 12000 },
+  { _id: 'motorola', minCost: 30000 }
+]
+
+> db.products.aggregate([{$group:{_id:"$brand", maxCost:{$max:"$cost"}}}]);
+[
+  { _id: 'apple', maxCost: 89000 },
+  { _id: 'oneplus', maxCost: 45000 },
+  { _id: 'samsung', maxCost: 32000 },
+  { _id: 'motorola', maxCost: 30000 }
+]
+
+> db.products.aggregate([{$limit:1}]);
+[
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b79"),
+    name: 'samsung m12',
+    brand: 'samsung',
+    cost: 12000,
+    qty: 21
+  }
+]
+
+> db.products.aggregate([{$limit:3}]);
+[
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b79"),
+    name: 'samsung m12',
+    brand: 'samsung',
+    cost: 12000,
+    qty: 21
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7a"),
+    name: 'iphone 12',
+    brand: 'apple',
+    cost: 80000,
+    qty: 20
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7b"),
+    name: 'oneplus t',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 30
+  }
+]
+
+> db.products.aggregate([{$skip:3}]);
+[
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7c"),
+    name: 'motorola m3',
+    brand: 'motorola',
+    cost: 30000,
+    qty: 50
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7d"),
+    name: 'samsung a12',
+    brand: 'samsung',
+    cost: 32000,
+    qty: 25
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7e"),
+    name: 'iphone 13',
+    brand: 'apple',
+    cost: 89000,
+    qty: 45
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7f"),
+    name: 'oneplus g',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 63
+  }
+]
+
+> db.products.aggregate([{$skip:1}]);
+[
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7a"),
+    name: 'iphone 12',
+    brand: 'apple',
+    cost: 80000,
+    qty: 20
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7b"),
+    name: 'oneplus t',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 30
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7c"),
+    name: 'motorola m3',
+    brand: 'motorola',
+    cost: 30000,
+    qty: 50
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7d"),
+    name: 'samsung a12',
+    brand: 'samsung',
+    cost: 32000,
+    qty: 25
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7e"),
+    name: 'iphone 13',
+    brand: 'apple',
+    cost: 89000,
+    qty: 45
+  },
+  {
+    _id: ObjectId("653a233d718a2bdd2cd21b7f"),
+    name: 'oneplus g',
+    brand: 'oneplus',
+    cost: 45000,
+    qty: 63
+  }
+]
+
+> db.products.find({name:"samsung m12"}).explain("executionStats");
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'dbms_assignment.products',
+    indexFilterSet: false,
+    parsedQuery: { name: { '$eq': 'samsung m12' } },
+    queryHash: '64908032',
+    planCacheKey: '64908032',
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    winningPlan: {
+      stage: 'COLLSCAN',
+      filter: { name: { '$eq': 'samsung m12' } },
+      direction: 'forward'
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 2,
+    totalKeysExamined: 0,
+    totalDocsExamined: 7,
+    executionStages: {
+      stage: 'COLLSCAN',
+      filter: { name: { '$eq': 'samsung m12' } },
+      nReturned: 1,
+      executionTimeMillisEstimate: 0,
+      works: 9,
+      advanced: 1,
+      needTime: 7,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      direction: 'forward',
+      docsExamined: 7
+    }
+  },
+  command: {
+    find: 'products',
+    filter: { name: 'samsung m12' },
+    '$db': 'dbms_assignment'
+  },
+  serverInfo: {
+    host: 'LAPTOP-2PU4C1PG',
+    port: 27017,
+    version: '6.0.6',
+    gitVersion: '26b4851a412cc8b9b4a18cdb6cd0f9f642e06aa7'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600
+  },
+  ok: 1
+}
+
+> db.products.ensureIndex({name: 1, brand: 1});
+[ 'name_1_brand_1' ]
+
+> db.products.getIndexes();
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { name: 1, brand: 1 }, name: 'name_1_brand_1' }
+]
+
+> db.products.find({name:"samsung m12"}).explain("executionStats");
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'dbms_assignment.products',
+    indexFilterSet: false,
+    parsedQuery: { name: { '$eq': 'samsung m12' } },
+    queryHash: '64908032',
+    planCacheKey: 'A6C0273F',
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    winningPlan: {
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: { name: 1, brand: 1 },
+        indexName: 'name_1_brand_1',
+        isMultiKey: false,
+        multiKeyPaths: { name: [], brand: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          name: [ '["samsung m12", "samsung m12"]' ],
+          brand: [ '[MinKey, MaxKey]' ]
+        }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 8,
+    totalKeysExamined: 1,
+    totalDocsExamined: 1,
+    executionStages: {
+      stage: 'FETCH',
+      nReturned: 1,
+      executionTimeMillisEstimate: 0,
+      works: 2,
+      advanced: 1,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      docsExamined: 1,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 1,
+        executionTimeMillisEstimate: 0,
+        works: 2,
+        advanced: 1,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        keyPattern: { name: 1, brand: 1 },
+        indexName: 'name_1_brand_1',
+        isMultiKey: false,
+        multiKeyPaths: { name: [], brand: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          name: [ '["samsung m12", "samsung m12"]' ],
+          brand: [ '[MinKey, MaxKey]' ]
+        },
+        keysExamined: 1,
+        seeks: 1,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  command: {
+    find: 'products',
+    filter: { name: 'samsung m12' },
+    '$db': 'dbms_assignment'
+  },
+  serverInfo: {
+    host: 'LAPTOP-2PU4C1PG',
+    port: 27017,
+    version: '6.0.6',
+    gitVersion: '26b4851a412cc8b9b4a18cdb6cd0f9f642e06aa7'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600
+  },
+  ok: 1
+}
+
+> db.products.dropIndex("name_1_brand_1");
+{ nIndexesWas: 2, ok: 1 }
+
+-----------------------------------END-----------------------------------

@@ -1,0 +1,135 @@
+NAME - Kishanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 26/10/23
+Assignment No - 09
+
+----------------------------------START----------------------------------
+
+> use 31114_db
+switched to db 31114_db
+
+> show collections
+
+> db.createCollection("bookstore");
+{ "ok" : 1 }
+
+> db.bookstore.insertOne({title:"Book1", price:500, quantity:4, tag:["tag1", "tag2"]});
+{
+	"acknowledged" : true,
+	"insertedId" : ObjectId("6539e2df80aa376e6645258a")
+}
+
+> db.bookstore.insertOne({title:"Book2", price:300, quantity:10, tag:["tag1", "tag3"]});
+{
+	"acknowledged" : true,
+	"insertedId" : ObjectId("6539e2f780aa376e6645258b")
+}
+
+> db.bookstore.insertOne({title:"Book3", price:100, quantity:15, tag:["tag5"]});
+{
+	"acknowledged" : true,
+	"insertedId" : ObjectId("6539e31280aa376e6645258c")
+}
+
+> db.bookstore.insertMany([{title:"Book4", price:150, quantity:40, tag:["tag6", "tag1", "tag2"]}, {title:"Book5", price:450, quantity:30, tag:["tag7"]}]);
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("6539e1c580aa376e66452587"),
+		ObjectId("6539e1c580aa376e66452588")
+	]
+}
+
+> db.bookstore.find();
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 150, "quantity" : 40, "tag" : [ "tag6", "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e1c580aa376e66452588"), "title" : "Book5", "price" : 450, "quantity" : 30, "tag" : [ "tag7" ] }
+{ "_id" : ObjectId("6539e2df80aa376e6645258a"), "title" : "Book1", "price" : 500, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e2f780aa376e6645258b"), "title" : "Book2", "price" : 300, "quantity" : 10, "tag" : [ "tag1", "tag3" ] }
+{ "_id" : ObjectId("6539e31280aa376e6645258c"), "title" : "Book3", "price" : 100, "quantity" : 15, "tag" : [ "tag5" ] }
+
+> db.bookstore.find({"price":300});
+{ "_id" : ObjectId("6539e2f780aa376e6645258b"), "title" : "Book2", "price" : 300, "quantity" : 10, "tag" : [ "tag1", "tag3" ] }
+
+> db.bookstore.find({"tag":{$in:["tag1"]}});
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 150, "quantity" : 40, "tag" : [ "tag6", "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e2df80aa376e6645258a"), "title" : "Book1", "price" : 500, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e2f780aa376e6645258b"), "title" : "Book2", "price" : 300, "quantity" : 10, "tag" : [ "tag1", "tag3" ] }
+
+> db.bookstore.findOne({"tag":{$in:["tag1"]}});
+{
+	"_id" : ObjectId("6539e1c580aa376e66452587"),
+	"title" : "Book4",
+	"price" : 150,
+	"quantity" : 40,
+	"tag" : [
+		"tag6",
+		"tag1",
+		"tag2"
+	]
+}
+
+> db.bookstore.find({$or:[{"title":"Book1"}, {"price":100}]});
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 100, "quantity" : 35, "tag" : [ "tag1", "tag6" ] }
+{ "_id" : ObjectId("6539ea8e80aa376e6645258d"), "title" : "Book3", "price" : 100, "quantity" : 15, "tag" : [ "tag5" ] }
+{ "_id" : ObjectId("6539eaa580aa376e6645258f"), "title" : "Book1", "price" : 500, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+
+> db.bookstore.find({$and:[{"title":"Book1"}, {"price":400}]});
+
+> db.bookstore.find({$and:[{"title":"Book1"}, {"price":500}]});
+{ "_id" : ObjectId("6539eaa580aa376e6645258f"), "title" : "Book1", "price" : 500, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+
+> db.bookstore.find({$and:[{"price":100}, {$or:[{"quantity":50}, {"quantity":40}]}]});
+
+> db.bookstore.find({$and:[{"price":100}, {$or:[{"quantity":20}, {"quantity":35}]}]});
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 100, "quantity" : 35, "tag" : [ "tag1", "tag6" ] }
+
+> db.bookstore.find({$and:[{"price":100}, {$or:[{"quantity":15}, {"quantity":35}]}]});
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 100, "quantity" : 35, "tag" : [ "tag1", "tag6" ] }
+{ "_id" : ObjectId("6539ea8e80aa376e6645258d"), "title" : "Book3", "price" : 100, "quantity" : 15, "tag" : [ "tag5" ] }
+
+> db.bookstore.update({"title":"Book3"}, {$set:{"price":200}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+> db.bookstore.find({"title":"Book3"});
+{ "_id" : ObjectId("6539e31280aa376e6645258c"), "title" : "Book3", "price" : 200, "quantity" : 15, "tag" : [ "tag5" ] }
+
+> db.bookstore.update({"tag":{$in:["tag1"]}}, {$set:{"price":200}}, {multi:true});
+WriteResult({ "nMatched" : 3, "nUpserted" : 0, "nModified" : 2 })
+
+> db.bookstore.find();
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 200, "quantity" : 40, "tag" : [ "tag6", "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e1c580aa376e66452588"), "title" : "Book5", "price" : 450, "quantity" : 30, "tag" : [ "tag7" ] }
+{ "_id" : ObjectId("6539e2df80aa376e6645258a"), "title" : "Book1", "price" : 200, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e2f780aa376e6645258b"), "title" : "Book2", "price" : 200, "quantity" : 10, "tag" : [ "tag1", "tag3" ] }
+{ "_id" : ObjectId("6539e31280aa376e6645258c"), "title" : "Book3", "price" : 200, "quantity" : 15, "tag" : [ "tag5" ] }
+
+> db.bookstore.save({"_id":ObjectId("6539e1c580aa376e66452587"), "title":"Book4", "price":100, "quantity":35, "tag":["tag1", "tag6"]});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+> db.bookstore.find();
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 100, "quantity" : 35, "tag" : [ "tag1", "tag6" ] }
+{ "_id" : ObjectId("6539e1c580aa376e66452588"), "title" : "Book5", "price" : 450, "quantity" : 30, "tag" : [ "tag7" ] }
+{ "_id" : ObjectId("6539e2df80aa376e6645258a"), "title" : "Book1", "price" : 200, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e2f780aa376e6645258b"), "title" : "Book2", "price" : 200, "quantity" : 10, "tag" : [ "tag1", "tag3" ] }
+{ "_id" : ObjectId("6539e31280aa376e6645258c"), "title" : "Book3", "price" : 200, "quantity" : 15, "tag" : [ "tag5" ] }
+
+{ "_id" : ObjectId("6539e31280aa376e6645258c"), "title" : "Book3", "price" : 200, "quantity" : 15, "tag" : [ "tag5" ] }
+> db.bookstore.remove({"title":"Book2"});
+
+WriteResult({ "nRemoved" : 1 })
+> db.bookstore.find();
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 100, "quantity" : 35, "tag" : [ "tag1", "tag6" ] }
+{ "_id" : ObjectId("6539e1c580aa376e66452588"), "title" : "Book5", "price" : 450, "quantity" : 30, "tag" : [ "tag7" ] }
+{ "_id" : ObjectId("6539e2df80aa376e6645258a"), "title" : "Book1", "price" : 200, "quantity" : 4, "tag" : [ "tag1", "tag2" ] }
+{ "_id" : ObjectId("6539e31280aa376e6645258c"), "title" : "Book3", "price" : 200, "quantity" : 15, "tag" : [ "tag5" ] }
+
+> db.bookstore.remove({"price":200});
+WriteResult({ "nRemoved" : 2 })
+
+> db.bookstore.find();
+{ "_id" : ObjectId("6539e1c580aa376e66452587"), "title" : "Book4", "price" : 100, "quantity" : 35, "tag" : [ "tag1", "tag6" ] }
+{ "_id" : ObjectId("6539e1c580aa376e66452588"), "title" : "Book5", "price" : 450, "quantity" : 30, "tag" : [ "tag7" ] }
+
+-----------------------------------END-----------------------------------

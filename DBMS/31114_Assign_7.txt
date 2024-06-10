@@ -1,0 +1,167 @@
+
+NAME - KIshanlal Choudhary
+ROLL NO - 31114
+CLASS - TE 1
+SUBJECT - DBMS
+DATE - 18/09/23
+Assignment No - 07
+
+------------------------------START------------------------------------
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| 31114_db           |
+| information_schema |
++--------------------+
+2 rows in set (0.012 sec)
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| 31114_db           |
+| information_schema |
++--------------------+
+2 rows in set (0.012 sec)
+
+MariaDB [(none)]> USE 31114_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+MariaDB [31114_db]> SHOW TABLES;
++--------------------+
+| Tables_in_31114_db |
++--------------------+
+| Areas_3B           |
+| Placement_Drive_2B |
+| Result_5           |
+| Student_2B         |
+| Student_Details    |
+| Student_Marks_5    |
+| Training_2B        |
++--------------------+
+7 rows in set (0.001 sec)
+
+ariaDB [31114_db]> CREATE TABLE library_table (
+    -> roll_no INT NOT NULL PRIMARY KEY,
+    -> name VARCHAR(20),
+    -> book VARCHAR(30));
+Query OK, 0 rows affected (0.189 sec)
+
+MariaDB [31114_db]> SELECT * FROM library_table;
+Empty set (0.002 sec)
+
+MariaDB [31114_db]> CREATE TABLE library_audit_table (
+    -> roll_no INT NOT NULL PRIMARY KEY,
+    -> name VARCHAR(20),
+    -> book VARCHAR(30),
+    -> action VARCHAR(10),
+    -> timestamp DATE);
+Query OK, 0 rows affected (0.198 sec)
+
+MariaDB [31114_db]> SELECT * FROM library_audit_table;
+Empty set (0.002 sec)
+
+MariaDB [31114_db]> INSERT INTO library_table VALUES 
+    -> (1, "A", "book1"),
+    -> (2, "B", "book2"),
+    -> (3, "C", "book3"),
+    -> (4, "D", "book4"),
+    -> (5, "E", "book5");
+Query OK, 5 rows affected (0.027 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [31114_db]> SET SQL_MODE = "ORACLE";
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [31114_db]> delimiter //
+MariaDB [31114_db]> CREATE TRIGGER on_update_trigger
+    -> BEFORE
+    -> UPDATE
+    -> ON library_table
+    -> FOR EACH ROW
+    -> BEGIN
+    -> INSERT INTO library_audit_table(roll_no, name, book, action) VALUES (old.roll_no, old.name, old.book, 'UPDATE', SYSDATE);
+    -> END; //
+Query OK, 0 rows affected (0.072 sec)
+
+MariaDB [31114_db]> delimiter //
+MariaDB [31114_db]> CREATE TRIGGER on_delete_trigger
+    -> BEFORE
+    -> DELETE
+    -> ON library_table
+    -> FOR EACH ROW
+    -> BEGIN
+    -> INSERT INTO library_audit_table(roll_no, name, book, action) VALUES (old.roll_no, old.name, old.book, 'DELETE', SYSDATE);
+    -> END; //
+Query OK, 0 rows affected (0.072 sec)
+
+MariaDB [31114_db]> delimiter ;
+
+MariaDB [31114_db]> SELECT * FROM library_table;
++---------+------+-------+
+| roll_no | name | book  |
++---------+------+-------+
+|       1 | A    | book1 |
+|       2 | B    | book2 |
+|       3 | C    | book3 |
+|       4 | D    | book4 |
+|       5 | E    | book5 |
++---------+------+-------+
+5 rows in set (0.001 sec)
+
+MariaDB [31114_db]> ALTER TABLE library_audit_table MODIFY COLUMN timestamp timestamp DEFAULT CURRENT_TIMESTAMP;
+Query OK, 0 rows affected (0.567 sec)              
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [31114_db]> UPDATE library_table SET book = 'book7' WHERE roll_no = 1;
+Query OK, 1 row affected (0.147 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [31114_db]> SELECT * FROM library_audit_table;
++---------+------+-------+--------+---------------------+
+| roll_no | name | book  | action | timestamp           |
++---------+------+-------+--------+---------------------+
+|       1 | A    | book1 | UPDATE | 2023-09-18 10:29:52 |
++---------+------+-------+--------+---------------------+
+1 row in set (0.001 sec)
+
+MariaDB [31114_db]> SELECT * FROM library_table;
++---------+------+-------+
+| roll_no | name | book  |
++---------+------+-------+
+|       1 | A    | book7 |
+|       2 | B    | book2 |
+|       3 | C    | book3 |
+|       4 | D    | book4 |
+|       5 | E    | book5 |
++---------+------+-------+
+5 rows in set (0.001 sec)
+
+MariaDB [31114_db]> DELETE FROM library_table WHERE roll_no = 4;
+Query OK, 1 row affected (0.037 sec)
+
+MariaDB [31114_db]> SELECT * FROM library_audit_table;
++---------+------+-------+--------+---------------------+
+| roll_no | name | book  | action | timestamp           |
++---------+------+-------+--------+---------------------+
+|       1 | A    | book1 | UPDATE | 2023-09-18 10:29:52 |
+|       4 | D    | book4 | DELETE | 2023-09-18 10:32:58 |
++---------+------+-------+--------+---------------------+
+2 rows in set (0.001 sec)
+
+MariaDB [31114_db]> SELECT * FROM library_table;
++---------+------+-------+
+| roll_no | name | book  |
++---------+------+-------+
+|       1 | A    | book7 |
+|       2 | B    | book2 |
+|       3 | C    | book3 |
+|       5 | E    | book5 |
++---------+------+-------+
+4 rows in set (0.001 sec)
+
+------------------------------END--------------------------------------
